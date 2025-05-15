@@ -10,13 +10,13 @@ with 💻 - ☕ - ❤ - chatGPT
 
 -----------Maze robot Solver Simulation with Webots---------
 
-           IR Sensor location:(recommended)
+           IR Sensor location:(Reference)
 Right-->| ir0 | ir1 | ir2 | ir3 | ir4 | ir5 | ir6 |<--Left
 Right-->| ir7 |             Body            | ir8 |<--Left
-                          | ir9 |
+        |       Body      | ir9 |      Body       |<--- Back center Sensor 
 ............................................................
 
-all-in-one.C -------------> TrackFinder - PathSimplification  - Executions
+All-in-One.C -------------> TrackFinder - PathSimplification  - Executions
 
 ............................................
 mode_telusur = false ------> telusur kiri

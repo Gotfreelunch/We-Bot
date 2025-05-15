@@ -15,14 +15,15 @@ WbDeviceTag left_motor;
 WbDeviceTag right_motor;
 
 //Variabel kendali PID
-double Kp = 3;             //Atur Kp
-double Ki = 0.0;           //Atur Ki  
-double Kd = 2.8;           //Atur Kd
-double forward = 15.0;     // Atur Kecepatan Robot
+double Kp = 3;             // Atur Kp
+double Ki = 0.1;           // Atur Ki
+double Kd = 2.8;           // Atur Kd 
+double forward = 15.0;     // Atur kecepatan
 
 double error = 0;
 double last_error = 0;
 double integral = 0;
+
 
 //Variabel untuk Pengambilan Nilai Sensor
 double sensor_values[NUM_SENSORS];
@@ -36,18 +37,14 @@ bool change = true;
 bool c_for = true;
 double weighted_sum = 0.0;   
 bool Switch = false; 
-
-// variabel untuk Main Logic
 bool front_sensor_false = false;
 bool front_sensor_true = false;
-bool right_end_sensor = false;
-bool left_end_sensor = false;
 
 //-----------------------------------------------------------------
-bool Mode_Telusur = false;  // Ganti ke false untuk mode telusur kiri atau true untuk telusur kanan
+bool Mode_Telusur = false; //Ganti ke false untuk mode telusur kiri atau true untuk telusur kanan
 //-----------------------------------------------------------------
 
-bool Mode_Robot = true; // Mode Track Finder dan Short Path(Jangan Diganti!!!)
+bool Mode_Robot = true;
 //Variabel untuk Mode Telusur Kanan dan Kiri
 char perempatan_dir = 'O';
 char simpang_T = 'O';
@@ -159,12 +156,13 @@ void jalan_lurus(){
     wb_motor_set_velocity(right_motor, right_speed);
 }   
 
-void searchtracklogic(){ // program Pemrosesan saat Pergantian Arah di Mode Telusur
+void searchtracklogic(){
    //Ambil dan Rekam perjalanan
    if(get_dir != prev_get_dir){
       if (get_dir != 'F') {
              direction[dir_index++] = get_dir;}
       prev_get_dir = get_dir;}
+   //Berhenti sebentar ketika berganti arah gerak Robot
    if (dir != prev_dir){
         printf("Stop 100ms \n"); 
           int delay = 100;
@@ -182,7 +180,7 @@ void searchtracklogic(){ // program Pemrosesan saat Pergantian Arah di Mode Telu
       change = true;}
 }
 
-void shortpathlogic(){ // program Pemrosesan saat Pergantian Arah di Mode Short Path
+void shortpathlogic(){
     if (dir != prev_dir){
                 int delay = 10;
                 if (dir=='S'||prev_dir=='S'){
@@ -212,14 +210,9 @@ void shortpathlogic(){ // program Pemrosesan saat Pergantian Arah di Mode Short 
 }
 
 
-void Main_Logic(bool Mode){ // Perintah dari Kondisi arah
-     // jika Jumlah sensor depan genap, pakai kode dibawah
-    front_sensor_true = sensor_values[3] > 500 || sensor_values[4] > 500;    // Kondisi sensor depan HIGH dengan jumlah Sensor depan genap, ambil 2 sensor tengah.
-    front_sensor_false = sensor_values[3] < 300 || sensor_values[4] < 300;   // Kondisi sensor depan LOW dengan jumlah Sensor depan genap, ambil 2 sensor tengah.
-
-     // jika jumlah sensor depan ganjil, "uncomment" kode dibawah dan "comment" kode diatas 
-   // front_sensor_true = sensor_values[3] > 500 ;    // Kondisi sensor depan HIGH dengan jumlah Sensor depan ganjil, ambil sensor tengah.
-   // front_sensor_false = sensor_values[3] < 300 ;   // Kondisi sensor depan LOW dengan jumlah Sensor depan genap, ambil sensor tengah.
+void Main_Logic(bool Mode){
+    front_sensor_true = sensor_values[3] > 500 || sensor_values[4] > 500;
+    front_sensor_false = sensor_values[3] < 300 || sensor_values[4] < 300;
     
      if (front_sensor_true && sensor_values[9] > 500 && sensor_values[8] > 500 && sensor_values[0] < 300 && sensor_values[7] < 300 && change == true){                   
        printf("Perempatan \n");
@@ -278,7 +271,7 @@ void Main_Logic(bool Mode){ // Perintah dari Kondisi arah
          change = false;}
        }
        
-     else if (sensor_values[9] > 500 && sensor_values[8] < 200 && front_sensor_true && change == true){            
+     else if (sensor_values[9] > 500 && sensor_values[8] < 200 && sensor_values[0] < 300 && sensor_values[7] < 300 && front_sensor_true && change == true){            
        printf("Simpang Tiga-Kiri  \n");
        if(Mode == true){
          dir = stKI;
@@ -360,8 +353,8 @@ int main() {//Void Setup
 
 
 while (wb_robot_step(TIME_STEP) != -1) { //Void Loop
-    
-    for (int i = 0; i < NUM_SENSORS; i++) { //Baca Semua sensor
+             
+    for (int i = 0; i < NUM_SENSORS; i++) { //Get sensor
         sensor_values[i] = wb_distance_sensor_get_value(sensors[i]);}      
     if(Switch == false){
       Main_Logic(Mode_Robot);}

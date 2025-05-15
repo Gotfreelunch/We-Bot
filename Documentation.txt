@@ -29,5 +29,4 @@ mode_telusur = true  ------> telusur kanan
 3. Sampai di target, geser robot ke start point                 | Short Path Mode     
 4. tekan "Q" untuk memulai Mode Short Path                      | ---------------
 
-
 Latest Edit: 11:44 PM 5/15/2025            
